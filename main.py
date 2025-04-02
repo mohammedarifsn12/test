@@ -1,5 +1,6 @@
 import streamlit as st
 from post_generator import generate_post
+import re  # Import regex for extracting templates
 
 st.title("🚀 AI-Powered LinkedIn Post Generator")
 
@@ -21,6 +22,12 @@ selected_length = st.selectbox("Select Post Length:", ["Short", "Medium", "Long"
 selected_language = st.selectbox("Select Language:", ["English", "Hinglish"])
 selected_tag = st.selectbox("Select Topic/Tag:", TAGS)  # Use predefined tags
 
+# Extract templates from text file
+def extract_templates(text):
+    """Extract templates enclosed in square brackets [ ]"""
+    templates = re.findall(r"\[(.*?)\]", text, re.DOTALL)  # Extract text inside [ ]
+    return [t.strip() for t in templates if t.strip()]  # Remove empty templates
+
 if st.button("🚀 Generate Post"):
     with st.spinner("Generating your post..."):
         templates = []
@@ -37,9 +44,3 @@ if st.button("🚀 Generate Post"):
         # Display the generated post
         st.subheader("Generated Post:")
         st.markdown(f"✅ **Your AI-Generated LinkedIn Post:**\n```\n{post}\n```")
-
-def extract_templates(text):
-    """Extract templates enclosed in square brackets [ ]"""
-    import re
-    templates = re.findall(r"\[(.*?)\]", text, re.DOTALL)  # Extract text inside [ ]
-    return [t.strip() for t in templates if t.strip()]  # Remove empty templates

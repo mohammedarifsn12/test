@@ -1,39 +1,34 @@
 import streamlit as st
-import json
 from post_generator import generate_post
 
 st.title("🚀 AI-Powered LinkedIn Post Generator")
 
+# Predefined tags
+TAGS = ["AI", "Data Science", "Machine Learning", "Deep Learning", "Cloud Computing", "Cybersecurity"]
+
 # Select Post Generation Method
 generation_method = st.radio(
     "Select post generation method:", 
-    ["Use Pre-built Templates", "Upload Your Own Templates"]
+    ["Use Pre-built Templates", "Upload Your Own Template File"]
 )
 
-uploaded_files = None
-if generation_method == "Upload Your Own Templates":
-    uploaded_files = st.file_uploader(
-        "Upload JSON files with templates", 
-        type=["json"], 
-        accept_multiple_files=True
-    )
+uploaded_file = None
+if generation_method == "Upload Your Own Template File":
+    uploaded_file = st.file_uploader("Upload a .txt file with templates", type=["txt"])
 
 # User selects post details
 selected_length = st.selectbox("Select Post Length:", ["Short", "Medium", "Long"])
 selected_language = st.selectbox("Select Language:", ["English", "Hinglish"])
-selected_tag = st.text_input("Enter Topic/Tag:", "")
+selected_tag = st.selectbox("Select Topic/Tag:", TAGS)  # Use predefined tags
 
 if st.button("🚀 Generate Post"):
     with st.spinner("Generating your post..."):
         templates = []
 
-        # Load multiple uploaded JSON files
-        if uploaded_files:
-            for file in uploaded_files:
-                try:
-                    templates.extend(json.load(file))  # Append all templates
-                except json.JSONDecodeError:
-                    st.error(f"Error reading {file.name}. Ensure it's a valid JSON file.")
+        # Read the uploaded text file
+        if uploaded_file:
+            templates = uploaded_file.read().decode("utf-8").split("\n")
+            templates = [t.strip() for t in templates if t.strip()]  # Remove empty lines
 
         # Generate LinkedIn Post
         post = generate_post(selected_length, selected_language, selected_tag, templates)

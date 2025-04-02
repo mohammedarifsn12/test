@@ -25,10 +25,10 @@ if st.button("🚀 Generate Post"):
     with st.spinner("Generating your post..."):
         templates = []
 
-        # Read the uploaded text file
+        # Read the uploaded text file and extract templates inside [ ]
         if uploaded_file:
-            templates = uploaded_file.read().decode("utf-8").split("\n")
-            templates = [t.strip() for t in templates if t.strip()]  # Remove empty lines
+            file_content = uploaded_file.read().decode("utf-8")
+            templates = extract_templates(file_content)  # Extract bracketed content
 
         # Generate LinkedIn Post
         post = generate_post(selected_length, selected_language, selected_tag, templates)
@@ -37,3 +37,9 @@ if st.button("🚀 Generate Post"):
         # Display the generated post
         st.subheader("Generated Post:")
         st.markdown(f"✅ **Your AI-Generated LinkedIn Post:**\n```\n{post}\n```")
+
+def extract_templates(text):
+    """Extract templates enclosed in square brackets [ ]"""
+    import re
+    templates = re.findall(r"\[(.*?)\]", text, re.DOTALL)  # Extract text inside [ ]
+    return [t.strip() for t in templates if t.strip()]  # Remove empty templates

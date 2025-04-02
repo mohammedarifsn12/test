@@ -3,6 +3,9 @@ from few_shot import FewShotPosts
 
 few_shot = FewShotPosts()
 
+# Predefined Tags
+TAGS = ["AI", "Data Science", "Machine Learning", "Deep Learning", "Cloud Computing", "Cybersecurity"]
+
 def get_length_str(length):
     """Convert length choice to human-readable format."""
     return {
@@ -29,6 +32,9 @@ def generate_hashtags(post_content):
 
 def generate_post(length, language, tag, user_templates=None):
     """Generate a LinkedIn post using user-provided templates if available."""
+    if tag not in TAGS:  # Ensure tag is valid
+        raise ValueError(f"Invalid tag: {tag}. Please select from predefined tags.")
+
     if user_templates and len(user_templates) >= 2:
         prompt = get_prompt_from_templates(user_templates, length, language, tag)
     else:
@@ -56,8 +62,7 @@ def get_prompt_from_templates(templates, length, language, tag):
     '''
     
     # Include up to 3 examples from user templates
-    for i, post in enumerate(templates[:3]):  
-        post_text = post.get('text', 'No example text provided.')
+    for i, post_text in enumerate(templates[:3]):  
         prompt += f'\n\nExample {i+1}: \n\n {post_text}'
 
     return prompt
@@ -87,4 +92,4 @@ def get_prompt(length, language, tag):
     return prompt
 
 if __name__ == "__main__":
-    print(generate_post("Medium", "English", "AI and Ethics"))
+    print(generate_post("Medium", "English", "AI"))
